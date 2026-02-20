@@ -24,17 +24,18 @@ Note that actions require access to the docker socket and generally don't work w
 containers:
   action_cooldown: 60  # 1 minute cooldown
   container3:
-    # Act on log matches
-    - regex: "process.*(failed|did not finish)" 
-      action: restart  # Restart the container when this regex is found
-    - keyword: critical
-      action: stop     # Stop the container when this keyword is found
-      action_cooldown: 10  # 10 seconds cooldown for this action
-
-    # Act on container events
-    - event: crash
-      action: restart
-      message_template: '{action_result_message}'
+    keywords:
+      # Act on log matches
+      - regex: "process.*(failed|did not finish)" 
+        action: restart  # Restart the container when this regex is found
+      - keyword: critical
+        action: stop     # Stop the container when this keyword is found
+        action_cooldown: 10  # 10 seconds cooldown for this action
+  
+      # Act on container events
+      - event: crash
+        action: restart
+        message_template: '{action_result_message}'
 ```
 
 ### Perform actions on other containers
@@ -42,12 +43,13 @@ containers:
 ```yaml
 containers:
   container3:
-    - regex: "process.*(failed|did not finish)" 
-      action: restart@some-other-container  # Restart another container when this regex is found
-    - keyword: critical
-      action: stop@some-other-container     # Stop anoter container when this keyword is found
-    - keyword: timeout
-      action: start@some-other-container
+    keywords:
+      - regex: "process.*(failed|did not finish)" 
+        action: restart@some-other-container  # Restart another container when this regex is found
+      - keyword: critical
+        action: stop@some-other-container     # Stop anoter container when this keyword is found
+      - keyword: timeout
+        action: start@some-other-container
 ```
 
 ## Trigger OliveTin Actions
@@ -71,8 +73,9 @@ Here is a an example config snippet:
 ```yaml
 containers:
   container3:
-    - regex: 'download.*failed'
-      olivetin_action_id: some-action-id
+    keywords:
+      - regex: 'download.*failed'
+        olivetin_action_id: some-action-id
 
 settings:
   olivetin_url: http://192.168.178.20:1337
@@ -88,19 +91,20 @@ You can configure multiple actions and pass arguments by using the `olivetin_act
 ```yaml
 containers:
   container3:
-    - keyword: critical
-      olivetin_actions:
-        - id: some-action-id
-          arguments:
-            - name: arg1
-              value: value1
-            - name: arg2
-              value: value2
-        - id: some-other-action-id
-          arguments:
-            - name: arg3
-              value: value3
-            - name: arg4
-              value: value4
+    keywords:
+      - keyword: critical
+        olivetin_actions:
+          - id: some-action-id
+            arguments:
+              - name: arg1
+                value: value1
+              - name: arg2
+                value: value2
+          - id: some-other-action-id
+            arguments:
+              - name: arg3
+                value: value3
+              - name: arg4
+                value: value4
 
 ```
